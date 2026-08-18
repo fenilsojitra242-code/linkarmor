@@ -210,10 +210,10 @@
 
 
   <!-- ── 05. URL SEARCH (THE INSPECTION STRIP) ───────────────────── -->
-  <section class="max-w-6xl mx-auto px-6 mb-16">
-    <div class="inspection-strip p-6 sm:p-8 space-y-6">
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 mb-16">
+    <div class="inspection-strip p-5 sm:p-8 space-y-6">
       
-      <div class="flex items-center justify-between text-[10px] mono text-[var(--paper-gray)] uppercase tracking-wider pb-2 border-b border-[var(--border-line)]">
+      <div class="flex items-center justify-between text-[10px] mono text-[var(--paper-gray)] uppercase tracking-wider pb-2 border-b border-[var(--border-line)] flex-wrap gap-2">
         <span class="font-bold text-[var(--forest-black)]">LINK TO VERIFY</span>
         <span id="stripStatusTag" class="text-[var(--botanical-green)] font-bold">READY FOR SPECIMEN</span>
       </div>
@@ -228,14 +228,14 @@
           class="w-full bg-transparent text-[var(--forest-black)] outline-none mono text-sm sm:text-base font-bold placeholder-[var(--paper-gray)] border-b-2 border-[var(--forest-black)] pb-2 focus:border-[var(--coral-accent)] transition-colors"
         />
 
-        <div class="flex items-center justify-between pt-2">
+        <div class="flex items-center justify-between pt-2 flex-wrap gap-3">
           <div class="flex items-center gap-3 text-xs mono">
-            <button id="pasteBtn" class="font-bold text-[var(--coral-accent)] hover:underline">PASTE</button>
+            <button id="pasteBtn" class="font-bold text-[var(--coral-accent)] hover:underline py-1.5 px-2">PASTE</button>
             <span class="text-[var(--border-line)]">|</span>
-            <button id="clearBtn" class="text-[var(--paper-gray)] hover:text-[var(--forest-black)]">CLEAR</button>
+            <button id="clearBtn" class="text-[var(--paper-gray)] hover:text-[var(--forest-black)] py-1.5 px-2">CLEAR</button>
           </div>
           
-          <button id="checkLinkBtn" class="btn-stamped">
+          <button id="checkLinkBtn" class="btn-stamped w-full sm:w-auto py-3 px-6 text-xs font-bold">
             <span id="checkLinkBtnText">CHECK LINK →</span>
           </button>
         </div>
@@ -263,17 +263,17 @@
 
 
   <!-- ── 08. VERDICT (CLEARANCE STAMP CONCEPT) ───────────────────── -->
-  <section id="verdict-section" class="hidden max-w-6xl mx-auto px-6 mb-16 space-y-12">
+  <section id="verdict-section" class="hidden max-w-6xl mx-auto px-4 sm:px-6 mb-16 space-y-12">
     
-    <div class="p-8 sm:p-12 bg-[var(--surface-white)] border-2 border-[var(--forest-black)] relative shadow-sm">
+    <div class="p-6 sm:p-12 bg-[var(--surface-white)] border-2 border-[var(--forest-black)] relative shadow-sm">
       
       <!-- Top Status Header -->
-      <div class="flex justify-between items-start flex-wrap gap-4 pb-6 border-b border-[var(--border-line)]">
+      <div class="flex justify-between items-start flex-col sm:flex-row gap-6 pb-6 border-b border-[var(--border-line)]">
         <div>
           <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--paper-gray)] mono block mb-1">
             FINAL CLEARANCE STATUS
           </span>
-          <h2 id="verdictHeadline" class="text-4xl sm:text-7xl font-black font-brand uppercase tracking-tight text-[var(--safe-green)] leading-none">
+          <h2 id="verdictHeadline" class="text-4xl sm:text-7xl font-black font-brand uppercase tracking-tight text-[var(--safe-green)] leading-none break-words">
             VERIFIED
           </h2>
           <span id="verdictSubLabel" class="text-xs uppercase font-bold text-[var(--paper-gray)] mono block mt-2">
@@ -282,12 +282,12 @@
         </div>
 
         <!-- 10. Confidence & Agreement Measurements -->
-        <div class="flex items-center gap-8 mono text-right">
+        <div class="flex items-center gap-6 sm:gap-8 mono text-left sm:text-right flex-wrap sm:flex-nowrap">
           <div>
             <div id="verdictConfidenceScore" class="text-3xl sm:text-5xl font-black font-brand text-[var(--forest-black)]">99.9%</div>
             <span class="text-[9px] uppercase font-bold text-[var(--paper-gray)] block">CONFIDENCE</span>
           </div>
-          <div class="border-l border-[var(--border-line)] pl-8">
+          <div class="border-l border-[var(--border-line)] pl-6 sm:pl-8">
             <div id="verdictAgreementScore" class="text-3xl sm:text-5xl font-black font-brand text-[var(--coral-accent)]">5 / 5</div>
             <span class="text-[9px] uppercase font-bold text-[var(--paper-gray)] block">MODEL AGREEMENT</span>
           </div>
@@ -295,13 +295,13 @@
       </div>
 
       <!-- 11. URL Identity Strip -->
-      <div class="pt-6 grid grid-cols-1 md:grid-cols-4 gap-4 mono text-xs">
-        <div class="md:col-span-4 p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)] flex justify-between items-center flex-wrap gap-2">
-          <div class="font-bold text-[var(--forest-black)] break-all">
+      <div class="pt-6 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mono text-xs">
+        <div class="col-span-2 md:col-span-4 p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)] flex justify-between items-center flex-wrap gap-2">
+          <div class="font-bold text-[var(--forest-black)] break-all max-w-[80%]">
             <span class="text-[9px] uppercase text-[var(--paper-gray)] block">VERIFIED URL SPECIMEN:</span>
             <span id="identityUrlText">https://example.com</span>
           </div>
-          <button id="copyUrlBtn" class="px-2.5 py-1 text-[10px] font-bold uppercase bg-[var(--surface-white)] border border-[var(--forest-black)] hover:bg-[var(--bg-ivory)]">
+          <button id="copyUrlBtn" class="px-3 py-1.5 text-[10px] font-bold uppercase bg-[var(--surface-white)] border border-[var(--forest-black)] hover:bg-[var(--bg-ivory)] shrink-0">
             COPY
           </button>
         </div>
@@ -653,7 +653,7 @@
 
   <!-- ── 22. FOOTER ──────────────────────────────────────────────── -->
   <footer class="border-t-2 border-[var(--forest-black)] bg-[var(--bg-ivory)] py-12 text-xs mono text-[var(--paper-gray)]">
-    <div class="max-w-6xl mx-auto px-6 space-y-6">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
       
       <div class="flex items-start justify-between flex-wrap gap-8">
         <div>
@@ -661,12 +661,11 @@
           <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--forest-black)]">KNOW WHAT'S BEHIND THE LINK.</span>
         </div>
 
-        <div class="flex items-center gap-6 text-xs uppercase font-bold text-[var(--forest-black)]">
+        <div class="flex items-center gap-6 text-xs uppercase font-bold text-[var(--forest-black)] flex-wrap">
           <a href="#checkpoint-hero" class="hover:text-[var(--coral-accent)]">Scanner</a>
+          <a href="#inspection-report" class="hover:text-[var(--coral-accent)]">Analysis</a>
           <a href="#model-stations" class="hover:text-[var(--coral-accent)]">Models</a>
           <a href="#benchmarks" class="hover:text-[var(--coral-accent)]">Benchmarks</a>
-          <a href="#checkpoint-hero" class="hover:text-[var(--coral-accent)]">Documentation</a>
-          <a href="#checkpoint-hero" class="hover:text-[var(--coral-accent)]">GitHub</a>
         </div>
       </div>
 
