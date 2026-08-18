@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LinkArmor — Know what's behind the link.</title>
 
+  <!-- Favicon / Brand Logo in Browser URL bar & Tab -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2317221F'/%3E%3Crect x='2' y='2' width='28' height='28' rx='4' fill='none' stroke='%23315C4C' stroke-width='2'/%3E%3Cpath d='M16 6 L25 10 V16 C25 21.5 21.2 26.2 16 27.5 C10.8 26.2 7 21.5 7 16 V10 Z' fill='%23315C4C'/%3E%3Ctext x='16' y='18.5' font-family='monospace' font-size='10' font-weight='900' fill='%23D84B3E' text-anchor='middle' dominant-baseline='middle'%3E//%3E%3C/text%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2317221F'/%3E%3Crect x='2' y='2' width='28' height='28' rx='4' fill='none' stroke='%23315C4C' stroke-width='2'/%3E%3Cpath d='M16 6 L25 10 V16 C25 21.5 21.2 26.2 16 27.5 C10.8 26.2 7 21.5 7 16 V10 Z' fill='%23315C4C'/%3E%3Ctext x='16' y='18.5' font-family='monospace' font-size='10' font-weight='900' fill='%23D84B3E' text-anchor='middle' dominant-baseline='middle'%3E//%3E%3C/text%3E%3C/svg%3E" />
+
   <!-- Google Fonts: DM Sans / Plus Jakarta Sans (Headings), IBM Plex Mono (Technical/Data) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -219,14 +223,22 @@
       </div>
 
       <div class="space-y-4">
-        <input
-          id="urlInput"
-          type="text"
-          placeholder="https://example.com/login"
-          autocomplete="off"
-          spellcheck="false"
-          class="w-full bg-transparent text-[var(--forest-black)] outline-none mono text-sm sm:text-base font-bold placeholder-[var(--paper-gray)] border-b-2 border-[var(--forest-black)] pb-2 focus:border-[var(--coral-accent)] transition-colors"
-        />
+        <div class="flex items-center border-b-2 border-[var(--forest-black)] focus-within:border-[var(--coral-accent)] transition-colors pb-2">
+          <!-- Logo / Domain Favicon Indicator in URL -->
+          <div id="urlLogoWrapper" class="mr-3 flex items-center justify-center w-8 h-8 rounded bg-[var(--surface-white)] border border-[var(--border-line)] shrink-0 overflow-hidden select-none" title="URL Identity Indicator">
+            <span id="urlDefaultLogo" class="mono font-bold text-xs text-[var(--coral-accent)]">//</span>
+            <img id="urlDomainFavicon" class="w-5 h-5 object-contain hidden" alt="Domain Logo" onerror="this.classList.add('hidden'); document.getElementById('urlDefaultLogo').classList.remove('hidden');" />
+          </div>
+
+          <input
+            id="urlInput"
+            type="text"
+            placeholder="https://example.com/login"
+            autocomplete="off"
+            spellcheck="false"
+            class="w-full bg-transparent text-[var(--forest-black)] outline-none mono text-sm sm:text-base font-bold placeholder-[var(--paper-gray)]"
+          />
+        </div>
 
         <div class="flex items-center justify-between pt-2 flex-wrap gap-3">
           <div class="flex items-center gap-3 text-xs mono">
@@ -297,9 +309,15 @@
       <!-- 11. URL Identity Strip -->
       <div class="pt-6 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mono text-xs">
         <div class="col-span-2 md:col-span-4 p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)] flex justify-between items-center flex-wrap gap-2">
-          <div class="font-bold text-[var(--forest-black)] break-all max-w-[80%]">
-            <span class="text-[9px] uppercase text-[var(--paper-gray)] block">VERIFIED URL SPECIMEN:</span>
-            <span id="identityUrlText">https://example.com</span>
+          <div class="flex items-center gap-3 font-bold text-[var(--forest-black)] break-all max-w-[80%]">
+            <div id="specimenLogoWrapper" class="w-8 h-8 bg-white border border-[var(--border-line)] flex items-center justify-center shrink-0 rounded overflow-hidden">
+              <img id="specimenFavicon" class="w-5 h-5 object-contain" src="" alt="Favicon" onerror="this.style.display='none'; document.getElementById('specimenDefaultLogo').style.display='flex';" />
+              <span id="specimenDefaultLogo" class="mono font-bold text-xs text-[var(--coral-accent)] hidden">//</span>
+            </div>
+            <div>
+              <span class="text-[9px] uppercase text-[var(--paper-gray)] block">VERIFIED URL SPECIMEN:</span>
+              <span id="identityUrlText">https://example.com</span>
+            </div>
           </div>
           <button id="copyUrlBtn" class="px-3 py-1.5 text-[10px] font-bold uppercase bg-[var(--surface-white)] border border-[var(--forest-black)] hover:bg-[var(--bg-ivory)] shrink-0">
             COPY
@@ -637,12 +655,15 @@
       </div>
 
       <div class="flex items-center gap-3 flex-1 min-w-[280px] max-w-lg">
-        <input
-          id="secondaryInput"
-          type="text"
-          placeholder="https://"
-          class="flex-1 bg-[var(--bg-ivory)] text-[var(--forest-black)] px-4 py-2.5 rounded border border-[var(--border-line)] mono text-xs outline-none"
-        />
+        <div class="relative flex items-center flex-1 bg-[var(--bg-ivory)] rounded border border-[var(--border-line)] px-3 py-1.5 focus-within:border-[var(--coral-accent)] transition-colors">
+          <span class="mono font-bold text-xs text-[var(--coral-accent)] mr-2 select-none">//</span>
+          <input
+            id="secondaryInput"
+            type="text"
+            placeholder="https://"
+            class="flex-1 bg-transparent text-[var(--forest-black)] mono text-xs outline-none"
+          />
+        </div>
         <button id="secondaryCheckBtn" class="btn-stamped px-5 py-2.5 text-xs whitespace-nowrap">
           CHECK AGAIN →
         </button>
@@ -696,13 +717,44 @@
     const secondaryCheckBtn = document.getElementById('secondaryCheckBtn');
     const copyUrlBtn = document.getElementById('copyUrlBtn');
 
+    const urlDefaultLogo = document.getElementById('urlDefaultLogo');
+    const urlDomainFavicon = document.getElementById('urlDomainFavicon');
+
     let currentUrlSpecimen = '';
+
+    function updateUrlLogo(url) {
+      if (!url || !url.trim()) {
+        urlDomainFavicon.classList.add('hidden');
+        urlDefaultLogo.classList.remove('hidden');
+        return;
+      }
+      try {
+        let testUrl = url.trim();
+        if (!testUrl.startsWith('http://') && !testUrl.startsWith('https://')) {
+          testUrl = 'https://' + testUrl;
+        }
+        const parsed = new URL(testUrl);
+        if (parsed.hostname && parsed.hostname.includes('.')) {
+          urlDomainFavicon.src = `https://www.google.com/s2/favicons?domain=${parsed.hostname}&sz=64`;
+          urlDomainFavicon.classList.remove('hidden');
+          urlDefaultLogo.classList.add('hidden');
+          return;
+        }
+      } catch (e) {}
+      urlDomainFavicon.classList.add('hidden');
+      urlDefaultLogo.classList.remove('hidden');
+    }
+
+    urlInput.addEventListener('input', (e) => {
+      updateUrlLogo(e.target.value);
+    });
 
     pasteBtn.addEventListener('click', async () => {
       try {
         const text = await navigator.clipboard.readText();
         if (text) {
           urlInput.value = text.trim();
+          updateUrlLogo(text.trim());
           executeCheckpointScan();
         }
       } catch (e) {
@@ -712,6 +764,7 @@
 
     clearBtn.addEventListener('click', () => {
       urlInput.value = '';
+      updateUrlLogo('');
       urlInput.focus();
     });
 
@@ -829,6 +882,21 @@
       document.getElementById('idProtocol').textContent = d.scheme || 'HTTPS';
       document.getElementById('idPath').textContent = d.path || '/';
       document.getElementById('idDns').textContent = d.dns_valid ? 'RESOLVED' : 'UNRESOLVED';
+
+      // Specimen Favicon / Logo
+      const specFav = document.getElementById('specimenFavicon');
+      const specDef = document.getElementById('specimenDefaultLogo');
+      const hostName = d.hostname || (function() {
+        try { return new URL(data.url.startsWith('http') ? data.url : 'https://' + data.url).hostname; } catch(e) { return ''; }
+      })();
+      if (hostName && hostName.includes('.')) {
+        specFav.src = `https://www.google.com/s2/favicons?domain=${hostName}&sz=64`;
+        specFav.style.display = 'block';
+        specDef.style.display = 'none';
+      } else {
+        specFav.style.display = 'none';
+        specDef.style.display = 'flex';
+      }
 
       // Split Numbers
       const phishP = sv.phishing_probability || (isThreat ? 99.8 : 0.1);
