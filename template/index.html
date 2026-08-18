@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LinkArmor — Know what's behind the link.</title>
+
+  <!-- Google Fonts: DM Sans / Plus Jakarta Sans (Headings), IBM Plex Mono (Technical/Data) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&family=IBM+Plex+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    /* ── Checkpoint & Wayfinding Color System ──────────────────────── */
+    :root {
+      --bg-ivory:       #F5F2E9;
+      --surface-white:  #FFFFFF;
+      --forest-black:   #17221F;
+      --coral-accent:   #D84B3E;
+      --botanical-green:#315C4C;
+      --brass-gold:     #E4B94F;
+      --paper-gray:     #B8B2A5;
+      
+      --safe-green:     #3D8065;
+      --threat-coral:   #D84B3E;
+      --sens-violet:    #765F82;
+      --invalid-gray:   #777A73;
+      
+      --border-line:    #D5CFC2;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      background-color: var(--bg-ivory);
+      color: var(--forest-black);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .font-brand { font-family: 'DM Sans', sans-serif; }
+    .mono { font-family: 'IBM Plex Mono', monospace; }
+
+    /* ── Signature Checkpoint Line ─────────────────────────────────── */
+    .checkpoint-line {
+      width: 4px;
+      background-color: var(--botanical-green);
+      transition: background-color 0.3s ease;
+    }
+
+    /* ── Physical Inspection Strip ─────────────────────────────────── */
+    .inspection-strip {
+      background: var(--surface-white);
+      border: 1.5px solid var(--forest-black);
+      box-shadow: 4px 4px 0px var(--forest-black);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .inspection-strip:focus-within {
+      box-shadow: 5px 5px 0px var(--coral-accent);
+      border-color: var(--coral-accent);
+    }
+
+    /* ── Stamped Action Button ─────────────────────────────────────── */
+    .btn-stamped {
+      background-color: var(--forest-black);
+      color: var(--surface-white);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.8125rem;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1.6rem;
+      border: 1.5px solid var(--forest-black);
+      border-radius: 1px;
+      transition: all 0.15s ease;
+    }
+    .btn-stamped:hover {
+      background-color: var(--coral-accent);
+      border-color: var(--coral-accent);
+      transform: translateY(-1px);
+    }
+
+    /* ── Inspection Station Line ──────────────────────────────────── */
+    .station-row {
+      border-bottom: 1px solid var(--border-line);
+      padding: 0.95rem 0;
+      transition: background-color 0.15s ease;
+    }
+    .station-row:hover {
+      background-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* ── Scanning Line ────────────────────────────────────────────── */
+    @keyframes scan-track {
+      0%   { left: 0%; width: 0%; }
+      50%  { left: 20%; width: 60%; }
+      100% { left: 100%; width: 0%; }
+    }
+    /* ── Kinetic URL Flow Stream Canvas ─────────────────────────── */
+    #flowCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.85;
+    }
+
+    .ui-layer {
+      position: relative;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body class="bg-[var(--bg-ivory)] selection:bg-[var(--coral-accent)] selection:text-white">
+
+  <!-- ── Kinetic URL Flow Stream Animation Canvas ───────────────── -->
+  <canvas id="flowCanvas"></canvas>
+
+  <div class="ui-layer">
+
+  <!-- ── 03. PHYSICAL FACILITY HEADER ────────────────────────────── -->
+  <header class="border-b border-[var(--border-line)] bg-[var(--bg-ivory)] sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      
+      <!-- Facility Sign Left: Brand & Tagline -->
+      <div class="flex items-center gap-3">
+        <div class="w-7 h-7 border border-[var(--forest-black)] flex items-center justify-center font-bold text-xs mono text-[var(--coral-accent)] bg-[var(--surface-white)]">
+          //
+        </div>
+        <div>
+          <span class="font-brand font-black text-base tracking-tight text-[var(--forest-black)] block leading-tight">LINKARMOR</span>
+          <span class="text-[9px] uppercase font-bold tracking-widest text-[var(--paper-gray)] mono">LINK VERIFICATION SYSTEM</span>
+        </div>
+      </div>
+
+      <!-- Center Checkpoint Navigation -->
+      <nav class="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-wider mono text-[var(--forest-black)]">
+        <a href="#checkpoint-hero" class="hover:text-[var(--coral-accent)] transition-colors">CHECK</a>
+        <a href="#inspection-report" class="hover:text-[var(--coral-accent)] transition-colors">ANALYSIS</a>
+        <a href="#model-stations" class="hover:text-[var(--coral-accent)] transition-colors">MODELS</a>
+        <a href="#benchmarks" class="hover:text-[var(--coral-accent)] transition-colors">ABOUT</a>
+      </nav>
+
+      <!-- Facility Telemetry & Serial Right -->
+      <div class="flex items-center gap-4 text-xs mono text-[var(--forest-black)] font-bold">
+        <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-[var(--safe-green)]"></span> ENGINE ONLINE</span>
+        <span class="text-[var(--border-line)] hidden sm:inline">|</span>
+        <span class="text-[10px] text-[var(--paper-gray)] hidden sm:inline">LA-2026 / ONLINE</span>
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- ── 04. HERO SECTION (CHECKPOINT 01) ────────────────────────── -->
+  <section id="checkpoint-hero" class="max-w-6xl mx-auto px-6 pt-16 pb-12 select-none">
+    
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      
+      <!-- Left Column: Checkpoint Callout & Large Headline -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="flex items-center gap-3 text-[10px] uppercase font-bold tracking-widest text-[var(--coral-accent)] mono">
+          <span>LINKARMOR</span>
+          <span>•</span>
+          <span>CHECKPOINT 01</span>
+        </div>
+        
+        <h1 class="text-5xl sm:text-7xl font-black font-brand tracking-tighter text-[var(--forest-black)] uppercase leading-[0.9]">
+          IS THIS LINK<br />
+          WHO IT SAYS<br />
+          <span class="text-[var(--coral-accent)]">IT IS?</span>
+        </h1>
+
+        <p class="text-base text-[var(--forest-black)] max-w-lg leading-relaxed font-medium">
+          Paste a URL. LinkArmor checks its structure, signals, domain status and five independent machine-learning model predictions before you click.
+        </p>
+      </div>
+
+      <!-- Right Column: Vertical Checkpoint Marker (01 -> 02 -> 03) -->
+      <div class="lg:col-span-5 hidden lg:flex flex-col justify-between h-full border-l border-[var(--border-line)] pl-8 space-y-8 mono text-xs">
+        <div class="space-y-1">
+          <span class="text-2xl font-black font-brand text-[var(--forest-black)]">01</span>
+          <span class="font-bold text-[var(--coral-accent)] block">INTAKE & VERIFICATION</span>
+          <p class="text-[var(--paper-gray)]">Physical URL inspection strip extracts 27 lexical and structural tokens.</p>
+        </div>
+        <div class="space-y-1">
+          <span class="text-2xl font-black font-brand text-[var(--forest-black)]">02</span>
+          <span class="font-bold text-[var(--forest-black)] block">FIVE CHECKPOINT STATIONS</span>
+          <p class="text-[var(--paper-gray)]">Stacking, Random Forest, XGBoost, Soft Voting, and Logistic Regression inspect signals.</p>
+        </div>
+        <div class="space-y-1">
+          <span class="text-2xl font-black font-brand text-[var(--forest-black)]">03</span>
+          <span class="font-bold text-[var(--forest-black)] block">CLEARANCE DECISION</span>
+          <p class="text-[var(--paper-gray)]">Instant identity determination with clear operational guidance.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ── 05. URL SEARCH (THE INSPECTION STRIP) ───────────────────── -->
+  <section class="max-w-6xl mx-auto px-6 mb-16">
+    <div class="inspection-strip p-6 sm:p-8 space-y-6">
+      
+      <div class="flex items-center justify-between text-[10px] mono text-[var(--paper-gray)] uppercase tracking-wider pb-2 border-b border-[var(--border-line)]">
+        <span class="font-bold text-[var(--forest-black)]">LINK TO VERIFY</span>
+        <span id="stripStatusTag" class="text-[var(--botanical-green)] font-bold">READY FOR SPECIMEN</span>
+      </div>
+
+      <div class="space-y-4">
+        <input
+          id="urlInput"
+          type="text"
+          placeholder="https://example.com/login"
+          autocomplete="off"
+          spellcheck="false"
+          class="w-full bg-transparent text-[var(--forest-black)] outline-none mono text-sm sm:text-base font-bold placeholder-[var(--paper-gray)] border-b-2 border-[var(--forest-black)] pb-2 focus:border-[var(--coral-accent)] transition-colors"
+        />
+
+        <div class="flex items-center justify-between pt-2">
+          <div class="flex items-center gap-3 text-xs mono">
+            <button id="pasteBtn" class="font-bold text-[var(--coral-accent)] hover:underline">PASTE</button>
+            <span class="text-[var(--border-line)]">|</span>
+            <button id="clearBtn" class="text-[var(--paper-gray)] hover:text-[var(--forest-black)]">CLEAR</button>
+          </div>
+          
+          <button id="checkLinkBtn" class="btn-stamped">
+            <span id="checkLinkBtnText">CHECK LINK →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 07. Scanning Experience (Checkpoint Active) -->
+      <div id="checkpointActiveBox" class="hidden pt-4 border-t border-[var(--border-line)] space-y-3 mono text-xs">
+        <div class="flex justify-between items-center text-[10px] uppercase font-bold text-[var(--coral-accent)]">
+          <span>CHECKPOINT ACTIVE</span>
+          <span id="scanActiveStep">INSPECTING TOKENS...</span>
+        </div>
+        <div class="h-1 w-full bg-[var(--border-line)] relative overflow-hidden">
+          <div class="h-full bg-[var(--coral-accent)] scan-beam-line"></div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-[var(--paper-gray)] uppercase pt-1">
+          <div>IDENTITY: <strong class="text-[var(--forest-black)]">CHECKING...</strong></div>
+          <div>STRUCTURE: <strong class="text-[var(--forest-black)]">CHECKING...</strong></div>
+          <div>DOMAIN: <strong class="text-[var(--forest-black)]">CHECKING...</strong></div>
+          <div>ENSEMBLE: <strong class="text-[var(--forest-black)]">CHECKING...</strong></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ── 08. VERDICT (CLEARANCE STAMP CONCEPT) ───────────────────── -->
+  <section id="verdict-section" class="hidden max-w-6xl mx-auto px-6 mb-16 space-y-12">
+    
+    <div class="p-8 sm:p-12 bg-[var(--surface-white)] border-2 border-[var(--forest-black)] relative shadow-sm">
+      
+      <!-- Top Status Header -->
+      <div class="flex justify-between items-start flex-wrap gap-4 pb-6 border-b border-[var(--border-line)]">
+        <div>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--paper-gray)] mono block mb-1">
+            FINAL CLEARANCE STATUS
+          </span>
+          <h2 id="verdictHeadline" class="text-4xl sm:text-7xl font-black font-brand uppercase tracking-tight text-[var(--safe-green)] leading-none">
+            VERIFIED
+          </h2>
+          <span id="verdictSubLabel" class="text-xs uppercase font-bold text-[var(--paper-gray)] mono block mt-2">
+            STANDARD WEB CONVENTIONS
+          </span>
+        </div>
+
+        <!-- 10. Confidence & Agreement Measurements -->
+        <div class="flex items-center gap-8 mono text-right">
+          <div>
+            <div id="verdictConfidenceScore" class="text-3xl sm:text-5xl font-black font-brand text-[var(--forest-black)]">99.9%</div>
+            <span class="text-[9px] uppercase font-bold text-[var(--paper-gray)] block">CONFIDENCE</span>
+          </div>
+          <div class="border-l border-[var(--border-line)] pl-8">
+            <div id="verdictAgreementScore" class="text-3xl sm:text-5xl font-black font-brand text-[var(--coral-accent)]">5 / 5</div>
+            <span class="text-[9px] uppercase font-bold text-[var(--paper-gray)] block">MODEL AGREEMENT</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. URL Identity Strip -->
+      <div class="pt-6 grid grid-cols-1 md:grid-cols-4 gap-4 mono text-xs">
+        <div class="md:col-span-4 p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)] flex justify-between items-center flex-wrap gap-2">
+          <div class="font-bold text-[var(--forest-black)] break-all">
+            <span class="text-[9px] uppercase text-[var(--paper-gray)] block">VERIFIED URL SPECIMEN:</span>
+            <span id="identityUrlText">https://example.com</span>
+          </div>
+          <button id="copyUrlBtn" class="px-2.5 py-1 text-[10px] font-bold uppercase bg-[var(--surface-white)] border border-[var(--forest-black)] hover:bg-[var(--bg-ivory)]">
+            COPY
+          </button>
+        </div>
+
+        <div class="p-3 bg-[var(--surface-white)] border border-[var(--border-line)]">
+          <span class="text-[9px] uppercase text-[var(--paper-gray)] block">DOMAIN</span>
+          <span id="idDomain" class="font-bold text-[var(--forest-black)] truncate block">example.com</span>
+        </div>
+
+        <div class="p-3 bg-[var(--surface-white)] border border-[var(--border-line)]">
+          <span class="text-[9px] uppercase text-[var(--paper-gray)] block">PROTOCOL</span>
+          <span id="idProtocol" class="font-bold text-[var(--safe-green)]">HTTPS</span>
+        </div>
+
+        <div class="p-3 bg-[var(--surface-white)] border border-[var(--border-line)]">
+          <span class="text-[9px] uppercase text-[var(--paper-gray)] block">PATH</span>
+          <span id="idPath" class="font-bold text-[var(--forest-black)] truncate block">/</span>
+        </div>
+
+        <div class="p-3 bg-[var(--surface-white)] border border-[var(--border-line)]">
+          <span class="text-[9px] uppercase text-[var(--paper-gray)] block">DNS STATUS</span>
+          <span id="idDns" class="font-bold text-[var(--safe-green)]">RESOLVED</span>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ── 17. THREAT / SAFE SPLIT NUMBERS ────────────────────────── -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 py-8 mono border-t border-b border-[var(--forest-black)]">
+      <div class="space-y-1">
+        <span class="text-[10px] uppercase font-bold text-[var(--safe-green)] block">SAFE PROBABILITY</span>
+        <div id="splitSafeNum" class="text-4xl sm:text-6xl font-black font-brand text-[var(--safe-green)]">99.9%</div>
+      </div>
+      <div class="space-y-1 text-left sm:text-right border-t sm:border-t-0 sm:border-l border-[var(--border-line)] sm:pl-8 pt-4 sm:pt-0">
+        <span class="text-[10px] uppercase font-bold text-[var(--threat-coral)] block">THREAT PROBABILITY</span>
+        <div id="splitThreatNum" class="text-4xl sm:text-6xl font-black font-brand text-[var(--threat-coral)]">00.1%</div>
+      </div>
+    </div>
+
+
+    <!-- ── 12. INSPECTION REPORT (TECHNICAL DOCUMENT SHEET) ───────── -->
+    <div id="inspection-report" class="space-y-6 pt-4">
+      
+      <div class="flex items-baseline justify-between border-b-2 border-[var(--forest-black)] pb-3">
+        <div class="flex items-baseline gap-4">
+          <span class="text-3xl font-black font-brand text-[var(--coral-accent)]">02</span>
+          <div>
+            <h3 class="text-2xl font-black font-brand uppercase text-[var(--forest-black)]">
+              INSPECTION REPORT
+            </h3>
+            <span class="text-xs text-[var(--paper-gray)] mono">Comprehensive forensic parameters extracted</span>
+          </div>
+        </div>
+        <span class="text-[10px] font-bold mono text-[var(--coral-accent)]">OFFICIAL DOSSIER</span>
+      </div>
+
+      <!-- Technical Document Table -->
+      <div class="bg-[var(--surface-white)] border border-[var(--border-line)] p-6 space-y-3 mono text-xs">
+        <div class="flex justify-between items-center py-2 border-b border-[var(--border-line)]">
+          <span class="text-[var(--paper-gray)] font-bold">DOMAIN</span>
+          <span id="repDomain" class="font-bold text-[var(--forest-black)]">example.com</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-[var(--border-line)]">
+          <span class="text-[var(--paper-gray)] font-bold">PROTOCOL</span>
+          <span id="repProtocol" class="font-bold text-[var(--safe-green)]">HTTPS (SSL ENCRYPTED)</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-[var(--border-line)]">
+          <span class="text-[var(--paper-gray)] font-bold">PATH</span>
+          <span id="repPath" class="font-bold text-[var(--forest-black)]">/login</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-[var(--border-line)]">
+          <span class="text-[var(--paper-gray)] font-bold">QUERY PARAMETERS</span>
+          <span id="repQuery" class="font-bold text-[var(--forest-black)]">None</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-[var(--border-line)]">
+          <span class="text-[var(--paper-gray)] font-bold">TOTAL LENGTH</span>
+          <span id="repLength" class="font-bold text-[var(--forest-black)]">22 characters</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-[var(--border-line)]">
+          <span class="text-[var(--paper-gray)] font-bold">SHANNON ENTROPY</span>
+          <span id="repEntropy" class="font-bold text-[var(--forest-black)]">3.82 (Standard Range)</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-[var(--border-line)]">
+          <span class="text-[var(--paper-gray)] font-bold">SPECIAL CHARACTERS</span>
+          <span id="repSpecials" class="font-bold text-[var(--forest-black)]">04 occurrences</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-[var(--border-line)]">
+          <span class="text-[var(--paper-gray)] font-bold">KEYWORD SIGNALS</span>
+          <span id="repKeywords" class="font-bold text-[var(--forest-black)]">0 detected</span>
+        </div>
+        <div class="flex justify-between items-center py-2">
+          <span class="text-[var(--paper-gray)] font-bold">DNS RESOLUTION STATUS</span>
+          <span id="repDns" class="font-bold text-[var(--safe-green)]">VERIFIED RESOLVED</span>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ── 13. URL BREAKDOWN (INTERACTIVE WAYFINDING LINE) ────────── -->
+    <div class="p-6 bg-[var(--surface-white)] border border-[var(--border-line)] space-y-4">
+      <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--coral-accent)] mono block">
+        13 / URL STRUCTURE WAYFINDING
+      </span>
+
+      <div class="p-4 bg-[var(--bg-ivory)] border border-[var(--border-line)] mono text-xs sm:text-base font-bold flex items-center gap-1 flex-wrap">
+        <span class="p-1 text-[var(--safe-green)]" id="bkScheme">https://</span>
+        <span class="p-1 text-[var(--threat-coral)]" id="bkSubdomain"></span>
+        <span class="p-1 text-[var(--forest-black)]" id="bkDomain">example.com</span>
+        <span class="p-1 text-[var(--brass-gold)]" id="bkPath">/login</span>
+      </div>
+
+      <div class="flex items-center gap-6 text-[10px] mono text-[var(--paper-gray)] uppercase">
+        <span>↑ PROTOCOL</span>
+        <span>↑ SUBDOMAIN</span>
+        <span>↑ DOMAIN</span>
+        <span>↑ PATH</span>
+      </div>
+    </div>
+
+
+    <!-- ── 14. THREAT SIGNALS (“WHAT CAUGHT OUR ATTENTION”) ───────── -->
+    <div class="space-y-6 pt-4">
+      <div class="space-y-1">
+        <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--coral-accent)] mono block">
+          14 / SIGNALS
+        </span>
+        <h3 class="text-2xl font-black font-brand uppercase text-[var(--forest-black)]">
+          WHAT CAUGHT OUR ATTENTION
+        </h3>
+      </div>
+
+      <!-- Numbered Horizontal Measurement Lines -->
+      <div id="threatSignalsList" class="space-y-0 mono text-xs divide-y divide-[var(--border-line)] border-t border-b border-[var(--border-line)]">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+
+
+    <!-- ── 18. “WHY DID LINKARMOR SAY THIS?” (QUOTATION STYLE) ────── -->
+    <div class="p-8 bg-[var(--surface-white)] border border-[var(--border-line)] space-y-4">
+      <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--coral-accent)] mono block">
+        18 / RATIONALE
+      </span>
+      <h3 class="text-xl font-black font-brand uppercase text-[var(--forest-black)]">
+        WHY DID LINKARMOR SAY THIS?
+      </h3>
+      <blockquote id="whyQuotationText" class="text-base sm:text-lg text-[var(--forest-black)] font-medium italic border-l-2 border-[var(--coral-accent)] pl-4 py-1">
+        “The lexical analysis and supervised ensemble models verified standard benign characteristics.”
+      </blockquote>
+    </div>
+
+  </section>
+
+
+  <!-- ── 15. FIVE MODEL CHECKPOINTS (INSPECTION STATIONS) ────────── -->
+  <section id="model-stations" class="hidden max-w-6xl mx-auto px-6 mb-20 space-y-8">
+    
+    <div class="border-t-2 border-[var(--forest-black)] pt-8 space-y-1">
+      <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--coral-accent)] mono block">
+        15 / ENSEMBLE CLASSIFIERS
+      </span>
+      <h2 class="text-3xl sm:text-4xl font-black font-brand text-[var(--forest-black)] uppercase">
+        FIVE INDEPENDENT CHECKS
+      </h2>
+    </div>
+
+    <!-- 5 Station Rows -->
+    <div class="space-y-0 mono text-xs sm:text-sm">
+      
+      <div class="station-row flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-3">
+          <span class="font-bold text-[var(--coral-accent)]">01</span>
+          <div>
+            <span class="font-bold text-[var(--forest-black)] font-brand text-sm block">STACKING CLASSIFIER</span>
+            <span class="text-[9px] uppercase font-bold text-[var(--coral-accent)]">PRIMARY STATION</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-8">
+          <span id="stValStack" class="font-black font-brand text-sm text-[var(--safe-green)]">SAFE</span>
+          <span id="stConfStack" class="text-[var(--paper-gray)] font-bold">99.9% CONFIDENCE</span>
+        </div>
+      </div>
+
+      <div class="station-row flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-3">
+          <span class="font-bold text-[var(--paper-gray)]">02</span>
+          <div>
+            <span class="font-bold text-[var(--forest-black)] font-brand text-sm block">RANDOM FOREST</span>
+            <span class="text-[9px] uppercase text-[var(--paper-gray)]">BAGGING ENSEMBLE</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-8">
+          <span id="stValRf" class="font-black font-brand text-sm text-[var(--safe-green)]">SAFE</span>
+          <span id="stConfRf" class="text-[var(--paper-gray)] font-bold">99.4% CONFIDENCE</span>
+        </div>
+      </div>
+
+      <div class="station-row flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-3">
+          <span class="font-bold text-[var(--paper-gray)]">03</span>
+          <div>
+            <span class="font-bold text-[var(--forest-black)] font-brand text-sm block">XGBOOST</span>
+            <span class="text-[9px] uppercase text-[var(--paper-gray)]">GRADIENT BOOSTING</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-8">
+          <span id="stValXgb" class="font-black font-brand text-sm text-[var(--safe-green)]">SAFE</span>
+          <span id="stConfXgb" class="text-[var(--paper-gray)] font-bold">98.8% CONFIDENCE</span>
+        </div>
+      </div>
+
+      <div class="station-row flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-3">
+          <span class="font-bold text-[var(--paper-gray)]">04</span>
+          <div>
+            <span class="font-bold text-[var(--forest-black)] font-brand text-sm block">SOFT VOTING CLASSIFIER</span>
+            <span class="text-[9px] uppercase text-[var(--paper-gray)]">PROBABILITY CONFLUENCE</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-8">
+          <span id="stValVote" class="font-black font-brand text-sm text-[var(--safe-green)]">SAFE</span>
+          <span id="stConfVote" class="text-[var(--paper-gray)] font-bold">99.1% CONFIDENCE</span>
+        </div>
+      </div>
+
+      <div class="station-row flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-3">
+          <span class="font-bold text-[var(--paper-gray)]">05</span>
+          <div>
+            <span class="font-bold text-[var(--forest-black)] font-brand text-sm block">LOGISTIC REGRESSION</span>
+            <span class="text-[9px] uppercase text-[var(--paper-gray)]">LINEAR BASELINE</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-8">
+          <span id="stValLr" class="font-black font-brand text-sm text-[var(--safe-green)]">SAFE</span>
+          <span id="stConfLr" class="text-[var(--paper-gray)] font-bold">97.0% CONFIDENCE</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 16. Model Consensus: THE VERDICT WASN'T A GUESS -->
+    <div class="p-8 bg-[var(--surface-white)] border border-[var(--border-line)] flex items-center justify-between flex-wrap gap-6">
+      <div>
+        <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--paper-gray)] mono block">
+          16 / CONSENSUS
+        </span>
+        <h3 class="text-xl sm:text-2xl font-black font-brand uppercase text-[var(--forest-black)]">
+          THE VERDICT WASN'T A GUESS.
+        </h3>
+        <div id="stationAgreementBig" class="text-3xl font-black font-brand text-[var(--coral-accent)] mono mt-1">
+          5 / 5 AGREEMENT
+        </div>
+      </div>
+
+      <!-- 5 Indicator Dots (● ● ● ● ●) -->
+      <div class="flex items-center gap-3" id="stationDotsContainer">
+        <span class="text-lg text-[var(--coral-accent)]">●</span>
+        <span class="text-lg text-[var(--coral-accent)]">●</span>
+        <span class="text-lg text-[var(--coral-accent)]">●</span>
+        <span class="text-lg text-[var(--coral-accent)]">●</span>
+        <span class="text-lg text-[var(--coral-accent)]">●</span>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- ── 19. SAFETY ACTION (“YOUR NEXT MOVE”) ────────────────────── -->
+  <section id="safety-section" class="hidden max-w-6xl mx-auto px-6 mb-20 space-y-6">
+    <div class="p-8 bg-[var(--surface-white)] border-l-4 border-[var(--safe-green)] space-y-4" id="safetyBoxBorder">
+      <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--paper-gray)] mono block">
+        19 / ACTIONABLE GUIDANCE
+      </span>
+      <h3 class="text-2xl font-black font-brand uppercase text-[var(--forest-black)]">
+        YOUR NEXT MOVE
+      </h3>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mono text-xs text-[var(--forest-black)] pt-2" id="safetyDirectivesGrid">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── 20. BENCHMARKS (“HOW WELL DOES THE SYSTEM PERFORM?”) ─────── -->
+  <section id="benchmarks" class="max-w-6xl mx-auto px-6 mb-24 space-y-8">
+    <div class="border-t-2 border-[var(--forest-black)] pt-8 space-y-6">
+      
+      <div class="flex justify-between items-baseline">
+        <h3 class="text-2xl sm:text-3xl font-black font-brand text-[var(--forest-black)] uppercase">
+          HOW WELL DOES THE SYSTEM PERFORM?
+        </h3>
+        <span class="text-[10px] mono text-[var(--paper-gray)]">90,036 HELD-OUT TEST SPECIMENS</span>
+      </div>
+
+      <!-- Asymmetric Benchmark Composition -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-8 font-mono text-left py-6 border-y border-[var(--border-line)]">
+        <div>
+          <div class="text-3xl sm:text-5xl font-black font-brand text-[var(--forest-black)]">99.41%</div>
+          <span class="text-[10px] uppercase font-bold text-[var(--paper-gray)]">ACCURACY</span>
+        </div>
+        <div>
+          <div class="text-3xl sm:text-5xl font-black font-brand text-[var(--safe-green)]">0.9871</div>
+          <span class="text-[10px] uppercase font-bold text-[var(--paper-gray)]">F1 SCORE</span>
+        </div>
+        <div>
+          <div class="text-3xl sm:text-5xl font-black font-brand text-[var(--coral-accent)]">0.9981</div>
+          <span class="text-[10px] uppercase font-bold text-[var(--paper-gray)]">ROC-AUC</span>
+        </div>
+        <div>
+          <div class="text-3xl sm:text-5xl font-black font-brand text-[var(--sens-violet)]">98.51%</div>
+          <span class="text-[10px] uppercase font-bold text-[var(--paper-gray)]">RECALL</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ── 21. “ANOTHER LINK?” (SECONDARY SCANNER) ─────────────────── -->
+  <section class="max-w-6xl mx-auto px-6 mb-24">
+    <div class="p-8 sm:p-10 bg-[var(--surface-white)] border border-[var(--border-line)] flex items-center justify-between flex-wrap gap-6">
+      <div>
+        <h4 class="text-xl sm:text-2xl font-black font-brand text-[var(--forest-black)] uppercase">
+          ANOTHER LINK?
+        </h4>
+        <p class="text-xs text-[var(--paper-gray)] mono mt-1">
+          Paste another URL and run a new verification checkpoint.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3 flex-1 min-w-[280px] max-w-lg">
+        <input
+          id="secondaryInput"
+          type="text"
+          placeholder="https://"
+          class="flex-1 bg-[var(--bg-ivory)] text-[var(--forest-black)] px-4 py-2.5 rounded border border-[var(--border-line)] mono text-xs outline-none"
+        />
+        <button id="secondaryCheckBtn" class="btn-stamped px-5 py-2.5 text-xs whitespace-nowrap">
+          CHECK AGAIN →
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ── 22. FOOTER ──────────────────────────────────────────────── -->
+  <footer class="border-t-2 border-[var(--forest-black)] bg-[var(--bg-ivory)] py-12 text-xs mono text-[var(--paper-gray)]">
+    <div class="max-w-6xl mx-auto px-6 space-y-6">
+      
+      <div class="flex items-start justify-between flex-wrap gap-8">
+        <div>
+          <span class="font-black text-2xl font-brand text-[var(--forest-black)] block uppercase">LINKARMOR</span>
+          <span class="text-[10px] uppercase font-bold tracking-widest text-[var(--forest-black)]">KNOW WHAT'S BEHIND THE LINK.</span>
+        </div>
+
+        <div class="flex items-center gap-6 text-xs uppercase font-bold text-[var(--forest-black)]">
+          <a href="#checkpoint-hero" class="hover:text-[var(--coral-accent)]">Scanner</a>
+          <a href="#model-stations" class="hover:text-[var(--coral-accent)]">Models</a>
+          <a href="#benchmarks" class="hover:text-[var(--coral-accent)]">Benchmarks</a>
+          <a href="#checkpoint-hero" class="hover:text-[var(--coral-accent)]">Documentation</a>
+          <a href="#checkpoint-hero" class="hover:text-[var(--coral-accent)]">GitHub</a>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-[var(--border-line)] flex items-center justify-between flex-wrap gap-4 text-[11px]">
+        <div>LINKARMOR ENGINE ● ONLINE</div>
+        <div>2026 • Machine-learning predictions are probabilistic. Independently verify sensitive links.</div>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- ── JAVASCRIPT LOGIC ────────────────────────────────────────── -->
+  <script>
+    const urlInput = document.getElementById('urlInput');
+    const pasteBtn = document.getElementById('pasteBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const checkLinkBtn = document.getElementById('checkLinkBtn');
+    const checkLinkBtnText = document.getElementById('checkLinkBtnText');
+    const stripStatusTag = document.getElementById('stripStatusTag');
+    const checkpointActiveBox = document.getElementById('checkpointActiveBox');
+
+    const verdictSection = document.getElementById('verdict-section');
+    const modelStationsSection = document.getElementById('model-stations');
+    const safetySection = document.getElementById('safety-section');
+
+    const secondaryInput = document.getElementById('secondaryInput');
+    const secondaryCheckBtn = document.getElementById('secondaryCheckBtn');
+    const copyUrlBtn = document.getElementById('copyUrlBtn');
+
+    let currentUrlSpecimen = '';
+
+    pasteBtn.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          urlInput.value = text.trim();
+          executeCheckpointScan();
+        }
+      } catch (e) {
+        urlInput.focus();
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      urlInput.value = '';
+      urlInput.focus();
+    });
+
+    checkLinkBtn.addEventListener('click', executeCheckpointScan);
+    urlInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') executeCheckpointScan();
+    });
+
+    secondaryCheckBtn.addEventListener('click', () => {
+      if (secondaryInput.value.trim()) {
+        urlInput.value = secondaryInput.value.trim();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(executeCheckpointScan, 300);
+      }
+    });
+
+    copyUrlBtn.addEventListener('click', async () => {
+      if (currentUrlSpecimen) {
+        await navigator.clipboard.writeText(currentUrlSpecimen);
+        copyUrlBtn.textContent = 'COPIED!';
+        setTimeout(() => { copyUrlBtn.textContent = 'COPY'; }, 1500);
+      }
+    });
+
+    async function executeCheckpointScan() {
+      const url = urlInput.value.trim();
+      if (!url) {
+        urlInput.focus();
+        return;
+      }
+
+      currentUrlSpecimen = url;
+      checkLinkBtn.disabled = true;
+      checkLinkBtnText.textContent = 'CHECKING...';
+      stripStatusTag.textContent = 'CHECKPOINT ACTIVE';
+      checkpointActiveBox.classList.remove('hidden');
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        const data = await response.json();
+
+        setTimeout(() => {
+          renderCheckpointResults(data);
+          verdictSection.classList.remove('hidden');
+          modelStationsSection.classList.remove('hidden');
+          safetySection.classList.remove('hidden');
+
+          verdictSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 400);
+
+      } catch (err) {
+        alert('Verification checkpoint failed. Ensure LinkArmor server is running.');
+      } finally {
+        checkLinkBtn.disabled = false;
+        checkLinkBtnText.textContent = 'CHECK LINK →';
+        stripStatusTag.textContent = 'VERIFICATION COMPLETE';
+        checkpointActiveBox.classList.add('hidden');
+      }
+    }
+
+    function renderCheckpointResults(data) {
+      const sv = data.stacking_verdict || {};
+      const isThreat = sv.prediction === 1;
+      const cat = data.threat_category || (isThreat ? 'Phishing Threat' : 'Verified Safe');
+      const d = data.url_dossier || {};
+
+      const headline = document.getElementById('verdictHeadline');
+      const subLabel = document.getElementById('verdictSubLabel');
+      const safetyBox = document.getElementById('safetyBoxBorder');
+
+      let themeColor = 'var(--safe-green)';
+      let targetHexColor = '#3D8065'; // Forest green
+      let titleStr = 'VERIFIED';
+      let subStr = 'STANDARD WEB CONVENTIONS';
+
+      if (cat.includes('Piracy') || cat.includes('Adware')) {
+        themeColor = 'var(--brass-gold)';
+        targetHexColor = '#E4B94F'; // Warm brass
+        titleStr = 'RESTRICTED';
+        subStr = 'PIRACY & ADWARE THREAT';
+      } else if (cat.includes('Adult') || cat.includes('18+')) {
+        themeColor = 'var(--sens-violet)';
+        targetHexColor = '#765F82'; // Muted violet
+        titleStr = 'SENSITIVE';
+        subStr = '18+ AGE-RESTRICTED CONTENT';
+      } else if (cat.includes('Non-Existent') || cat.includes('Invalid')) {
+        themeColor = 'var(--invalid-gray)';
+        targetHexColor = '#777A73'; // Paper gray
+        titleStr = 'UNVERIFIED';
+        subStr = 'FAILED DNS RESOLUTION';
+      } else if (isThreat) {
+        themeColor = 'var(--threat-coral)';
+        targetHexColor = '#D84B3E'; // Burnt coral / Red
+        titleStr = 'REJECTED';
+        subStr = 'CREDENTIAL THEFT PATTERNS DETECTED';
+      }
+
+      headline.textContent = titleStr;
+      headline.style.color = themeColor;
+      subLabel.textContent = subStr;
+      safetyBox.style.borderLeftColor = themeColor;
+
+      const conf = sv.confidence || 99.9;
+      document.getElementById('verdictConfidenceScore').textContent = conf + '%';
+      const agreeCount = data.phishing_votes >= 3 ? data.phishing_votes : (data.total_models - data.phishing_votes);
+      document.getElementById('verdictAgreementScore').textContent = `${agreeCount} / ${data.total_models}`;
+
+      // URL Identity
+      document.getElementById('identityUrlText').textContent = d.canonical_url || data.url;
+      document.getElementById('idDomain').textContent = d.hostname || 'example.com';
+      document.getElementById('idProtocol').textContent = d.scheme || 'HTTPS';
+      document.getElementById('idPath').textContent = d.path || '/';
+      document.getElementById('idDns').textContent = d.dns_valid ? 'RESOLVED' : 'UNRESOLVED';
+
+      // Split Numbers
+      const phishP = sv.phishing_probability || (isThreat ? 99.8 : 0.1);
+      const safeP = sv.safe_probability || (isThreat ? 0.2 : 99.9);
+      document.getElementById('splitSafeNum').textContent = safeP + '%';
+      document.getElementById('splitThreatNum').textContent = phishP + '%';
+
+      // Inspection Report
+      document.getElementById('repDomain').textContent = d.hostname || 'example.com';
+      document.getElementById('repProtocol').textContent = `${d.scheme || 'HTTPS'} (${d.is_https ? 'SSL ENCRYPTED' : 'UNENCRYPTED'})`;
+      document.getElementById('repPath').textContent = d.path || '/';
+      document.getElementById('repQuery').textContent = d.query_string || 'None';
+      document.getElementById('repLength').textContent = `${d.url_length || data.url.length} characters`;
+      document.getElementById('repEntropy').textContent = `${d.entropy || 3.82} (${(d.entropy || 0) > 4.2 ? 'Elevated Randomness' : 'Standard Range'})`;
+      document.getElementById('repSpecials').textContent = `${d.special_chars_count || 0} occurrences`;
+      document.getElementById('repKeywords').textContent = `${(d.matched_keywords || []).length} detected (${(d.matched_keywords || []).join(', ') || 'None'})`;
+      document.getElementById('repDns').textContent = d.dns_valid ? `RESOLVED (${d.dns_resolved_ip})` : 'FAILED DNS RESOLUTION';
+
+      // URL Breakdown
+      document.getElementById('bkScheme').textContent = (d.scheme ? d.scheme.toLowerCase() + '://' : 'https://');
+      document.getElementById('bkSubdomain').textContent = (d.subdomain && d.subdomain !== 'None' ? d.subdomain + '.' : '');
+      document.getElementById('bkDomain').textContent = d.registered_domain || d.hostname || 'example.com';
+      document.getElementById('bkPath').textContent = (d.path && d.path !== '/' ? d.path : '');
+
+      // Threat Signals List
+      const sBox = document.getElementById('threatSignalsList');
+      sBox.innerHTML = '';
+      (data.evidence_chips || []).forEach((c, idx) => {
+        const div = document.createElement('div');
+        div.className = 'py-3 flex items-center justify-between';
+        div.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-[var(--coral-accent)] font-bold">0${idx+1}</span>
+            <span class="font-bold text-[var(--forest-black)]">${c.name.toUpperCase()}</span>
+          </div>
+          <span class="font-bold uppercase ${c.type === 'threat' ? 'text-[var(--threat-coral)]' : (c.type === 'warning' ? 'text-[var(--brass-gold)]' : 'text-[var(--safe-green)]')}">${c.type}</span>
+        `;
+        sBox.appendChild(div);
+      });
+
+      // Why Quotation
+      document.getElementById('whyQuotationText').textContent = `“${data.explanation || 'The domain structure and lexical signals conform to verified conventions.'}”`;
+
+      // 15. Model Stations
+      const results = data.results || [];
+      const mStack = results.find(r => r.model === 'Stacking Classifier') || {};
+      const mRf = results.find(r => r.model === 'Random Forest') || {};
+      const mXgb = results.find(r => r.model === 'XGBoost') || {};
+      const mVote = results.find(r => r.model === 'Voting Classifier') || {};
+      const mLr = results.find(r => r.model === 'Logistic Regression') || {};
+
+      setStationRow('stValStack', 'stConfStack', mStack);
+      setStationRow('stValRf', 'stConfRf', mRf);
+      setStationRow('stValXgb', 'stConfXgb', mXgb);
+      setStationRow('stValVote', 'stConfVote', mVote);
+      setStationRow('stValLr', 'stConfLr', mLr);
+
+      document.getElementById('stationAgreementBig').textContent = `${agreeCount} / ${data.total_models} AGREEMENT`;
+
+      const dots = document.getElementById('stationDotsContainer');
+      dots.innerHTML = '';
+      for (let i = 0; i < 5; i++) {
+        const span = document.createElement('span');
+        span.className = `text-lg ${i < agreeCount ? 'text-[var(--coral-accent)]' : 'text-[var(--paper-gray)]'}`;
+        span.textContent = i < agreeCount ? '●' : '○';
+        dots.appendChild(span);
+      }
+
+      // Safety Directives Grid
+      const sGrid = document.getElementById('safetyDirectivesGrid');
+      sGrid.innerHTML = '';
+      if (isThreat) {
+        sGrid.innerHTML = `
+          <div class="p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)]"><strong>01</strong> &nbsp; Don't enter your password.</div>
+          <div class="p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)]"><strong>02</strong> &nbsp; Don't download files.</div>
+          <div class="p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)]"><strong>03</strong> &nbsp; Don't send payment details.</div>
+          <div class="p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)]"><strong>04</strong> &nbsp; Verify the domain first.</div>
+        `;
+      } else {
+        sGrid.innerHTML = `
+          <div class="p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)]"><strong>01</strong> &nbsp; Domain verified.</div>
+          <div class="p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)]"><strong>02</strong> &nbsp; No major threat signals.</div>
+          <div class="p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)]"><strong>03</strong> &nbsp; Model risk is low.</div>
+          <div class="p-3 bg-[var(--bg-ivory)] border border-[var(--border-line)]"><strong>04</strong> &nbsp; Normal caution advised.</div>
+        `;
+      }
+
+      // Smooth Number Counting Animation
+      animateCount(document.getElementById('verdictConfidenceScore'), conf, 800, '%');
+      animateCount(document.getElementById('splitSafeNum'), safeP, 800, '%');
+      animateCount(document.getElementById('splitThreatNum'), phishP, 800, '%');
+      
+      // Update background flow stream color calmly (Green for safe, Coral/Red for threats)
+      setFlowColor(targetHexColor);
+    }
+
+    function setStationRow(valId, confId, m) {
+      const isThreat = m.prediction === 1;
+      const elVal = document.getElementById(valId);
+      elVal.textContent = isThreat ? 'THREAT' : 'SAFE';
+      elVal.style.color = isThreat ? 'var(--threat-coral)' : 'var(--safe-green)';
+      document.getElementById(confId).textContent = (m.confidence || 99) + '% CONFIDENCE';
+    }
+
+    function animateCount(element, target, duration = 800, suffix = '') {
+      if (!element) return;
+      const start = 0;
+      const startTime = performance.now();
+      function update(time) {
+        const elapsed = time - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = (start + (target - start) * easeOut).toFixed(1);
+        element.textContent = current + suffix;
+        if (progress < 1) requestAnimationFrame(update);
+        else element.textContent = target + suffix;
+      }
+      requestAnimationFrame(update);
+    }
+
+    /* ── 🌊 SERENE CONTINUOUS KINETIC URL FLOW ENGINE ────────────── */
+    let targetFlowColor = '#315C4C';
+
+    function setFlowColor(color) {
+      if (color && typeof color === 'string') {
+        if (color.startsWith('#')) targetFlowColor = color;
+        else if (color.includes('safe') || color.includes('green')) targetFlowColor = '#3D8065';
+        else if (color.includes('threat') || color.includes('coral') || color.includes('red')) targetFlowColor = '#D84B3E';
+        else if (color.includes('brass') || color.includes('gold')) targetFlowColor = '#E4B94F';
+        else if (color.includes('violet') || color.includes('sens')) targetFlowColor = '#765F82';
+        else targetFlowColor = color;
+      }
+    }
+
+    function initFlowAnimation() {
+      const canvas = document.getElementById('flowCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width, height, dpr;
+
+      function resize() {
+        dpr = window.devicePixelRatio || 1;
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+        ctx.scale(dpr, dpr);
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      let mouse = { x: width * 0.5, y: height * 0.4, targetX: width * 0.5, targetY: height * 0.4 };
+      window.addEventListener('mousemove', (e) => {
+        mouse.targetX = e.clientX;
+        mouse.targetY = e.clientY;
+      });
+
+      // 5 Fluid Web Link Strands with steady, calm, uniform motion
+      const strands = [
+        { yBaseRatio: 0.22, amp: 34, freq: 0.0016, speed: 0.00038, phase: 0, defaultColor: '#315C4C', packets: [] },
+        { yBaseRatio: 0.38, amp: 44, freq: 0.0013, speed: 0.00030, phase: 1.8, defaultColor: '#D84B3E', packets: [] },
+        { yBaseRatio: 0.55, amp: 38, freq: 0.0015, speed: 0.00034, phase: 3.4, defaultColor: '#E4B94F', packets: [] },
+        { yBaseRatio: 0.72, amp: 34, freq: 0.0012, speed: 0.00028, phase: 5.1, defaultColor: '#315C4C', packets: [] },
+        { yBaseRatio: 0.88, amp: 28, freq: 0.0018, speed: 0.00032, phase: 2.2, defaultColor: '#17221F', packets: [] }
+      ];
+
+      // Continuous packets on each strand
+      strands.forEach((st) => {
+        const count = 3;
+        for (let i = 0; i < count; i++) {
+          st.packets.push({
+            t: (i / count) + Math.random() * 0.2,
+            speed: 0.00026 + Math.random() * 0.00015,
+            size: 2.5
+          });
+        }
+      });
+
+      // Pure analytic continuous function for exact Y at any X - perfectly calm motion
+      function computeWaveY(x, st, timeMs) {
+        const yBase = height * st.yBaseRatio;
+        const currentPhase = st.phase + timeMs * st.speed;
+
+        let waveY = yBase + Math.sin(x * st.freq + currentPhase) * st.amp;
+        waveY += Math.cos(x * st.freq * 0.55 + currentPhase * 0.7) * 8;
+
+        // Smooth continuous gentle cursor deflection
+        const dx = x - mouse.x;
+        const dy = waveY - mouse.y;
+        const distSq = dx * dx + dy * dy;
+        const radius = 240;
+        if (distSq < radius * radius) {
+          const dist = Math.sqrt(distSq);
+          const force = Math.pow(1 - dist / radius, 2);
+          waveY += (dy / (dist || 1)) * force * 30;
+        }
+
+        return waveY;
+      }
+
+      let lastTime = performance.now();
+
+      function render(currentTime) {
+        try {
+          const delta = Math.min(currentTime - lastTime, 50);
+          lastTime = currentTime;
+
+          ctx.clearRect(0, 0, width, height);
+
+          // Smooth cursor interpolation
+          mouse.x += (mouse.targetX - mouse.x) * 0.06;
+          mouse.y += (mouse.targetY - mouse.y) * 0.06;
+
+          // Draw each strand with steady, serene motion
+          strands.forEach((st) => {
+            const activeColor = targetFlowColor || st.defaultColor;
+
+            // 1. Draw smooth ribbon strand
+            ctx.beginPath();
+            const stepX = 12;
+            for (let x = 0; x <= width + stepX; x += stepX) {
+              const y = computeWaveY(x, st, currentTime);
+              if (x === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+
+            ctx.strokeStyle = activeColor;
+            ctx.globalAlpha = 0.18;
+            ctx.lineWidth = 1.1;
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
+
+            // 2. Draw continuous float-interpolated data packets & silky trails
+            st.packets.forEach(pkt => {
+              pkt.t = (pkt.t + pkt.speed * (delta / 16.6)) % 1.0;
+
+              const posX = pkt.t * width;
+              const posY = computeWaveY(posX, st, currentTime);
+
+              // Smooth trailing tail
+              for (let step = 1; step <= 4; step++) {
+                const tailT = (pkt.t - step * 0.007 + 1.0) % 1.0;
+                const tailX = tailT * width;
+                const tailY = computeWaveY(tailX, st, currentTime);
+
+                ctx.beginPath();
+                ctx.arc(tailX, tailY, pkt.size * (1 - step * 0.18), 0, Math.PI * 2);
+                ctx.fillStyle = activeColor;
+                ctx.globalAlpha = Math.max(0, 0.22 - step * 0.045);
+                ctx.fill();
+              }
+
+              // Soft radial aura glow around packet
+              try {
+                const halo = ctx.createRadialGradient(posX, posY, 0, posX, posY, pkt.size * 3.5);
+                halo.addColorStop(0, activeColor);
+                halo.addColorStop(1, 'rgba(245, 242, 233, 0)');
+                ctx.fillStyle = halo;
+                ctx.globalAlpha = 0.28;
+                ctx.beginPath();
+                ctx.arc(posX, posY, pkt.size * 3.5, 0, Math.PI * 2);
+                ctx.fill();
+              } catch(e) {}
+
+              // Core packet dot
+              ctx.beginPath();
+              ctx.arc(posX, posY, pkt.size, 0, Math.PI * 2);
+              ctx.fillStyle = activeColor;
+              ctx.globalAlpha = 0.7;
+              ctx.fill();
+              ctx.globalAlpha = 1.0;
+            });
+          });
+        } catch (err) {
+          console.error('Render loop error:', err);
+        } finally {
+          requestAnimationFrame(render);
+        }
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    window.addEventListener('load', initFlowAnimation);
+  </script>
+  </div> <!-- end .ui-layer -->
+</body>
+</html>
