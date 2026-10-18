@@ -83,8 +83,36 @@ MODEL_METRICS = {
     },
 }
 
-# ── Flask app ─────────────────────────────────────────────────────────────────
-app = Flask(__name__, template_folder=TEMPLATE_DIR)
+# ── Flask app with dual WSGI/ASGI Support ──────────────────────────────────────
+class LinkArmorApp(Flask):
+    """
+    Flask application with transparent dual WSGI & ASGI support.
+    Supports native WSGI servers (Gunicorn, Waitress, Flask dev server)
+    as well as ASGI servers like Uvicorn (e.g. `uvicorn app:app`).
+    """
+    def __call__(self, *args, **kwargs):
+        if len(args) == 1 and isinstance(args[0], dict) and "type" in args[0]:
+            # ASGI 2 call from servers like Uvicorn
+            scope = args[0]
+            try:
+                from asgiref.wsgi import WsgiToAsgi
+                asgi3 = WsgiToAsgi(self)
+                async def asgi2_instance(receive, send):
+                    await asgi3(scope, receive, send)
+                return asgi2_instance
+            except ImportError:
+                pass
+        return super().__call__(*args, **kwargs)
+
+
+app = LinkArmorApp(__name__, template_folder=TEMPLATE_DIR)
+
+# Also expose explicit ASGI3 wrapper
+try:
+    from asgiref.wsgi import WsgiToAsgi
+    asgi_app = WsgiToAsgi(app)
+except ImportError:
+    asgi_app = None
 
 
 @app.route("/")
