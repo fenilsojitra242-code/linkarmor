@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: LinkArmor Threat Intelligence & URL Phishing Detection API
+  description: >
+    Production REST API specification for LinkArmor's real-time malicious URL 
+    feature engineering, heuristic inspection, and machine learning classification engine.
+  version: 1.2.0
+  contact:
+    name: Fenil Sojitra
+    email: fenilsojitra242@gmail.com
+servers:
+  - url: http://localhost:5000
+    description: Local Development / Docker Environment
+  - url: https://linkarmor-api.onrender.com
+    description: Production Cloud Deployment
+
+paths:
+  /health:
+    get:
+      summary: Health & Readiness Probe
+      description: Returns service availability, uptime, and loaded ML model status.
+      responses:
+        '200':
+          description: Service is healthy and model inference engine is ready.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  uptime_seconds:
+                    type: number
+                    example: 14205.8
+                  model_loaded:
+                    type: boolean
+                    example: true
+                  engine_version:
+                    type: string
+                    example: 1.2.0
+
+  /predict:
+    post:
+      summary: Analyze & Classify URL
+      description: >
+        Extracts lexical, domain, and structural features from a target URL 
+        and computes a phishing risk score and classification verdict.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/URLPredictionRequest'
+      responses:
+        '200':
+          description: URL classification analysis completed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/URLPredictionResponse'
+        '400':
+          description: Invalid request payload or malformed URL.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    URLPredictionRequest:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          description: The fully qualified or raw URL to evaluate.
+          example: "http://secure-login.bank-update.verify-account.com/auth"
+
+    URLPredictionResponse:
+      type: object
+      properties:
+        url:
+          type: string
+          example: "http://secure-login.bank-update.verify-account.com/auth"
+        is_phishing:
+          type: boolean
+          example: true
+        confidence_score:
+          type: number
+          format: float
+          example: 0.964
+        risk_level:
+          type: string
+          enum: [Low, Moderate, High, Critical]
+          example: "Critical"
+        heuristic_breakdown:
+          type: object
+          properties:
+            url_length:
+              type: integer
+              example: 58
+            has_ip_address:
+              type: boolean
+              example: false
+            suspicious_keyword_count:
+              type: integer
+              example: 3
+            subdomain_depth:
+              type: integer
+              example: 3
+            uses_https:
+              type: boolean
+              example: false
+        latency_ms:
+          type: number
+          example: 14.8
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Validation Error"
+        message:
+          type: string
+          example: "The 'url' parameter must be a non-empty string."
